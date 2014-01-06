@@ -25,6 +25,11 @@ func(e *Entity) GetComponent(c Component) Component {
 	return nil;
 }
 
+func (e *Entity) Destroy() {
+	e.system.unregisterEntity(e);
+	e.system = nil;
+}
+
 func(e *Entity) HasComponent(c Component) bool {
 	return e.GetComponent(c) != nil;
 }
