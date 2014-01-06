@@ -13,10 +13,10 @@ How ECS works
 -
 This ECS framework is made up of four types: Entity, Component, Node, and System.
 
-a Component is a struct, eg, "Velocity"
+A Component is a struct, eg, "Velocity"
 
-an Entity is an unnamed collection of components. for example, "Velocity", "Car", "Weight"
+An Entity is an unnamed collection of Components. These components can be added and removed from the entity at runtime. For example, "Velocity", "Car", "Position"
 
-A node defines rules for entities depending on what components are loaded for them. eg, "Car + Velocity" might activate collision physics
+A Node defines rules for Entities depending on what components are loaded for them. eg, "Car + Position" might activate NodeCollidable
 
-A system keeps track of all entities and nodes, and is responsible for triggering node logic.
+A System keeps track of all Entities and Nodes, and is responsible for triggering Node logic.
