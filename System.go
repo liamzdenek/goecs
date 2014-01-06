@@ -17,10 +17,10 @@ func NewSystem() *System {
 }
 
 func (s *System) AddNode(n Node) {
-	kind := reflect.TypeOf(n).Kind()
+	kind := reflect.TypeOf(n)
 
 	for tn, _ := range s.Nodes {
-		tkind := reflect.TypeOf(tn).Kind()
+		tkind := reflect.TypeOf(tn)
 		if kind == tkind {
 			panic("Attempting to add the same node (type: '" + kind.String() + "') multiple times to a single system")
 		}
@@ -49,6 +49,14 @@ func (s *System) AddEntity(e *Entity) {
 	}
 }
 
+func (s *System) GetEntitiesByNode(n Node) []*Entity {
+	return s.Nodes[n]
+}
+
+func (s *System) GetNodesByEntity(e *Entity) []Node {
+	return s.Entities[e]
+}
+
 func (s *System) register(n Node, e *Entity) {
 	s.Nodes[n] = append(s.Nodes[n], e)
 	s.Entities[e] = append(s.Entities[e], n)
@@ -62,11 +70,11 @@ func (s *System) unregisterNode(n Node) {
 				if i == 0 {
 					n_list = n_list[1:]
 				} else if i == len(n_list) {
-					n_list = n_list[:i-1]
+					n_list = n_list[:i]
 				} else {
-				n_list = append(n_list[:i-1], n_list[i+1:]...)
-			}
-			s.Entities[e] = n_list
+					n_list = append(n_list[:i], n_list[i+1:]...)
+				}
+				s.Entities[e] = n_list
 				break
 			}
 		}
@@ -83,9 +91,9 @@ func (s *System) unregisterEntity(e *Entity) {
 				if i == 0 {
 					e_list = e_list[1:]
 				} else if i == len(e_list) {
-					e_list = e_list[:i-1]
+					e_list = e_list[:i]
 				} else {
-					e_list = append(e_list[:i-1], e_list[i+1:]...)
+					e_list = append(e_list[:i], e_list[i+1:]...)
 				}
 				s.Nodes[n] = e_list
 				break
@@ -99,7 +107,14 @@ func (s *System) unregisterEntity(e *Entity) {
 func (s *System) Tick() {
 	for n, e_list := range s.Nodes {
 		for _, e := range e_list {
-			n.Tick(e)
+			if e.changed {
+				e.changed = false;
+				if n.Satisfies(e) {
+					n.Tick(e)
+				}
+			} else {
+				n.Tick(e)
+			}
 		}
 	}
 }
